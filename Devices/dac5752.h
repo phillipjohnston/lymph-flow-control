@@ -26,13 +26,13 @@ typedef enum outputRanges
 ********************/
 
 //Register Definitions
-#define RW 128
-#define REG2 32
-#define REG1 16
-#define REG0 8
-#define A2 4
-#define A1 2
-#define A0 1
+#define RW 128 //BIT 7*
+#define REG2 32 //Bit 5
+#define REG1 16 //Bit 4
+#define REG0 8 //Bit 3
+#define A2 4 //Bit 2
+#define A1 2 //Bit 1
+#define A0 1 //Bit 0
 
 // Power Up Definitions
 #define PUA 1
