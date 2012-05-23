@@ -71,28 +71,6 @@ void setup()
    Serial.println("Setting DAC to 5V");
    DAC.setValue(ADDRESS_B, 0xFFFF);
    
-   
-   Serial.print("\nADDRESS_A:  ");
-   Serial.print(ADDRESS_A);
-   Serial.print("\nADDRESS_B:  ");
-   Serial.print(ADDRESS_B);
-   Serial.print("\nADDRESS_ALL:  ");
-   Serial.print(ADDRESS_ALL);   
-   
-   Serial.print("\nA0:  ");
-   Serial.print(__A0);   
-   Serial.print("\nA1:  ");
-   Serial.print(__A1);   
-   Serial.print("\nA2:  ");
-   Serial.print(__A2);   
-   Serial.print("\nREG0:  ");
-   Serial.print(REG0);   
-   Serial.print("\nREG1:  ");
-   Serial.print(REG1);   
-   Serial.print("\nREG2:  ");
-   Serial.print(REG2);   
-   Serial.print("\nRW:  ");
-   Serial.print(RW);   
 }
  
  /* The loop() is empty because all the relevant setup and output initialization is
