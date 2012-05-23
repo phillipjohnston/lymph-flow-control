@@ -3,6 +3,7 @@
  * 	     Parker MX80L linear stage
  * 
  * Created by Jeff Kornuta, September 18, 2011.
+ * Modified by Phillip Johnston, 22 May 2012
  * Released into the public domain.
  *
 */
@@ -15,6 +16,7 @@
 */
 #include "Servo.h"
 #include "HardwareSerial.h"
+#include "dac5752.h"
 #include "SPI.h"
 #include "math.h"
 
@@ -34,32 +36,10 @@ const byte MDR0_Config = 3;    // 0 0 00 00 11
 const byte MDR1_Config = 0;    // 00000000
 /***************************************************************/
 
-/*************** DAC OP CODES AND CONFIGURATION ****************/
-/*Output range 24 bits*/
-const byte OUT_RANGE_TOP = 12; //0 0 001 100 -- output range for both DACs
-const byte OUT_RANGE_MID = 0; //0000 0000 -- don't care
-const byte OUT_RANGE_BOT = 0; //00000 000 -- +5 V
-
-/*Power on DAC A*/
-const byte POWER_CONT_TOP = 16; //0 0 010 000 -- power control
-const byte POWER_CONT_MID = 0; //00000 000 -- don't care for write
-const byte POWER_CONT_BOT = 1; //0000 00 001 -- turn on DAC A
-
-
-/*Set DAC A Voltage to 5 V*/
-const byte DAC_REG_TOP = 0; //0 0 000 000 -- DAC register A
-const byte DAC_REG_MID = 255; //1111 1111 -- top of 32767
-const byte DAC_REG_BOT = 0; //1111 1111 -- bottom of 32767
-
-/*Load DAC registers?*/
-const byte CONT_REG_TOP = 25; //0 0 011 001 -- change settings
-const byte CONT_REG_MID = 0; //0000 0000 -- don't care
-const byte CONT_REG_BOT = 12; //0000 1000 -- TSD enable and clamp disable
-const byte CONT_REG_TOP2 = 25; //0 0 011 001 -- CLR function
-const byte CONT_REG_MID2 = 0; //0000 0000 -- don't care
-const byte CONT_REG_BOT2 = 2; //0000 0010 -- don't care
-/***************************************************************/
-
+/***************
+* Declarations *
+***************/
+DACClass DAC;
 
 Servo::Servo(int chipSelect, int dacSelect)
 {
@@ -67,15 +47,11 @@ Servo::Servo(int chipSelect, int dacSelect)
    pinMode(chipSelect, OUTPUT);
    
    //Initialize DAC Object
-   pinMode(dacSelect, OUTPUT);
-
+   DAC.setupSPI(dacSelect); //Set pin 8 as the DAC CS Pin
 
    // do some object-oriented junk
    _chipSelect = chipSelect;
    digitalWrite(_chipSelect, HIGH);
-   _dacSelect = dacSelect;
-   digitalWrite(_dacSelect, HIGH);
-
 }
 
 
@@ -228,112 +204,19 @@ void Servo::_ls7366rConfig(void)
 /*Configure the DAC--currently only turns on DAC A*/
 void Servo::_dacConfig(void)
 {
-  /*SPI.setDataMode(SPI_MODE3);
-  SPI.setClockDivider(SPI_CLOCK_DIV128);*/
-  int i;
-  int die = 0;
 
-  /*Set the output range for both DACs to +5V*/    
-/*  byte dacOutRange[3] = {OUT_RANGE_TOP, OUT_RANGE_MID, OUT_RANGE_BOT};
-  _chipTell(dacOutRange, 3, _dacSelect);
-//  dacOutRange[0] = dacOutRange[0] | 128;
-  delayMicroseconds(200);
-
-  unsigned char dacCheckOutCmd[3] = {OUT_RANGE_TOP | 128, OUT_RANGE_MID, OUT_RANGE_BOT};
-  unsigned char dacCheckOut[3];
-  _chipTalk(dacCheckOutCmd, 3, dacCheckOut, 3, _dacSelect);
-  for (i=0;i<3;i++)
-  {
-	  Serial.print("DAC values at ");
-	  Serial.print(i);
-	  Serial.println(":");
-	  Serial.println(dacOutRange[i], BIN);
-	  Serial.println(dacCheckOut[i], BIN);
-	  if (dacCheckOut[i] != dacOutRange[i])
-	  {
-		  die = 1;
-	  }
-  }*/
-
-  /*if (die)
-  {
-		  Serial.println("\n  DAC OUTPUT RANGE CONFIGURATION FAILURE. Please restart.");
-		  while (1) { }
-  }*/
-
-  /*Serial.println("  >> DAC output range successfully configured.\n");
-
-  Serial.println("Set output range to +5V");
-
-  delay(10);*/
-
-  /*Set TSD and current clamp*/
- /* byte dacContReg[3] = {CONT_REG_TOP, CONT_REG_MID, CONT_REG_BOT};
-  _chipTell(dacContReg, 3, _dacSelect);
-  dacContReg[0] = dacContReg[0] | 128;
-  delayMicroseconds(200);
-
-  unsigned char dacCheckContCmd[3] = {CONT_REG_TOP | 128, CONT_REG_MID, CONT_REG_BOT};
-  unsigned char dacCheckCont[3];
-  _chipTalk(dacCheckContCmd, 3, dacCheckCont, 3, _dacSelect);
-  for (i=0;i<3;i++)
-  {
-	  Serial.print("DAC values at ");
-	  Serial.print(i);
-	  Serial.println(":");
-	  Serial.println(dacContReg[i], BIN);
-	  Serial.println(dacCheckCont[i], BIN);
-	  if (dacCheckCont[i] != dacContReg[i])
-	  {
-		  die = 1;
-	  }
-  }*/
-
-  /*if (die)
-  {
-		  Serial.println("\n  DAC CONTROL REGISTER CONFIGURATION FAILURE. Please restart.");
-		  while (1) { }
-  }*/
-
-  /*Turn on DAC A*/
-  Serial.println("Acquire!!");
-  delay(2000);
-  byte dacPowerCont[3] = {POWER_CONT_TOP, POWER_CONT_MID, POWER_CONT_BOT};
-  _chipTell(dacPowerCont, 3, _dacSelect);
-  dacPowerCont[0] = dacPowerCont[0] | 128;
-  delayMicroseconds(200);
-
-
-  unsigned char dacCheckPowerCmd[3] = {POWER_CONT_TOP | 128, POWER_CONT_MID, POWER_CONT_BOT};
-  unsigned char dacCheckPower[3];
-  Serial.println("Press Single Seq!!!!");
-  delay(1000);
-  _chipTalk(dacCheckPowerCmd, 3, dacCheckPower, 3, _dacSelect);
-  for (i=0;i<3;i++)
-  {
-	  Serial.print("DAC values at ");
-	  Serial.print(i);
-	  Serial.println(":");
-	  Serial.println(dacPowerCont[i], BIN);
-	  Serial.println(dacCheckPower[i], BIN);
-	  if (dacCheckPower[i] != dacPowerCont[i])
-	  {
-		  die = 1;
-	  }
-  }
+  //TODO:  Turn on and check both dacs
+  DAC.setOutputRange((uint8_t) ADDRESS_ALL, (uint32_t) UNIPOLAR_5V);
+  delayMicroseconds(1);  
+  DAC.setPowerControl(PUA); //Power up DAC A
+  uint32_t dacCheckPower = DAC.getPowerControl();
   
-  /*if (die)
-  {
-	  Serial.println("\n  DAC POWER CONTROL CONFIGURATION FAILURE. Please restart.");
-	  while (1) { }
-  }*/
+  //TODO:  Check what the power control is returning, make sure DAC A/B are on
 
+  //TODO:  If the checking worked out, print this stuff..
   Serial.println("  >> DAC power control successfully configured.\n");
 
   Serial.println("Turned on DAC A.");
-
-  delay(10);
-
 }
 
 
