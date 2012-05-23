@@ -1,4 +1,6 @@
-/*
+
+<!-- saved from url=(0072)https://raw.github.com/TheWorldJoker/lymph-flow-control/master/Servo.cpp -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">/*
  * Servo.cpp - Library for interacting with a
  * 	     Parker MX80L linear stage
  * 
@@ -67,9 +69,9 @@ double Servo::position(void)
 
    // turn 4 byte array into one looong var
    count = result[0];
-   for (int i = 1; i < 4; i++)
+   for (int i = 1; i &lt; 4; i++)
    {
-      count = count << 8;
+      count = count &lt;&lt; 8;
       count = count | result[i];
    }
 
@@ -100,7 +102,7 @@ double Servo::position(void)
        digitalWrite(_applyArray[0], LOW);
        digitalWrite(_applyArray[1], LOW);
    }
-   else if (volts < 0.0)  
+   else if (volts &lt; 0.0)  
    {
        // make sure motor is moving backward
        digitalWrite(_applyArray[0], LOW);
@@ -116,8 +118,8 @@ double Servo::position(void)
    // write particular value to PWM pin; make sure it's a valid byte!
    double val = 0;
    // can't be less than -10 or more than 10
-   if (volts > 10.0) { val = 10.0; }
-   else if (volts < -10.0) { val = -10.0; }
+   if (volts &gt; 10.0) { val = 10.0; }
+   else if (volts &lt; -10.0) { val = -10.0; }
    else { val = volts; }
    //2.5 is the 2.5V REFIN, 4 is just a set gain
    //The 32767 comes from the max bit value being 32767, which is one less than
@@ -184,9 +186,9 @@ void Servo::_ls7366rConfig(void)
   _chipTalk(mdr0Read, 1, MDR0_Val, 1, _chipSelect);
   
   // are the registers correct? if not, stall indefinitely
-  if (MDR0_Config == MDR0_Val[0] && MDR1_Config == MDR1_Val[0])
+  if (MDR0_Config == MDR0_Val[0] &amp;&amp; MDR1_Config == MDR1_Val[0])
   {
-    Serial.println("  >> LS7366R successfully configured.\n");
+    Serial.println("  &gt;&gt; LS7366R successfully configured.\n");
   }
   else
   {
@@ -214,7 +216,7 @@ void Servo::_dacConfig(void)
   //TODO:  Check what the power control is returning, make sure DAC A/B are on
 
   //TODO:  If the checking worked out, print this stuff..
-  Serial.println("  >> DAC power control successfully configured.\n");
+  Serial.println("  &gt;&gt; DAC power control successfully configured.\n");
 
   Serial.println("Turned on DAC A.");
 }
@@ -231,7 +233,7 @@ void Servo::_chipTell(byte data[], int size, int chipSelectPin)
   
   // send bytes to chipSelectPin chip--bytes sent are set up pre-function call,
   // but probably start off with some sort of op code and continue from there
-  for (i=0; i<size; i++)
+  for (i=0; i&lt;size; i++)
   {
 	  SPI.transfer(data[i]);
   }
@@ -249,7 +251,7 @@ void Servo::_chipTalk(unsigned char readCmd[], int inSize, unsigned char *dataRe
   
   // send whatever bytes to initiate read--size will be stored in inSize and
   // that's how we know how many to send
-  /*for (i=0;i<inSize;i++)
+  /*for (i=0;i&lt;inSize;i++)
   {
 	  Serial.println(readCmd[i], BIN);
 	  SPI.transfer(readCmd[i]);
@@ -270,7 +272,7 @@ void Servo::_chipTalk(unsigned char readCmd[], int inSize, unsigned char *dataRe
   // here we just grab the data and store it in dataRead, we'll let the function
   // caller decide how much data needs to be written depending on what read code
   // was sent, and this will be stored in outSize
-/*  for (i=0; i<outSize; i++)
+/*  for (i=0; i&lt;outSize; i++)
   {
 	  // here we're going to assume that all chips giving readback data don't
 	  // really care what's being sent to them concurrently, but this may have
@@ -287,3 +289,4 @@ void Servo::_chipTalk(unsigned char readCmd[], int inSize, unsigned char *dataRe
 
 
 
+</pre></body></html>

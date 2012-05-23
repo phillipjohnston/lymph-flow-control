@@ -7,6 +7,12 @@
 #include "dac5752.h"
 #include "SPI.h"
 
+#ifdef DAC_DEBUG
+  #define debugf(msg) Serial.print msg
+#else
+  #define debugf(msg)
+#endif
+
 /*
 * Thoughts and Notes:
 *		Implement checking that everything is set correctly after we try tos et it
@@ -20,7 +26,10 @@
 
 DACClass::DACClass()
 {
-	//Nothing to construct
+  #ifdef DAC_DEBUG
+    //Serial.begin(115200);
+    Serial.println("Initializing DAC object...");
+  #endif
 }
 
 DACClass::~DACClass()
@@ -75,10 +84,20 @@ inline void DACClass::_disableChipSelect()
 
 uint32_t DACClass::_transfer(uint8_t a, uint8_t b, uint8_t c)
 {
+  
+        debugf(("Sending the following message to the DAC:"));
+        debugf(("\nMSB:  "));
+        debugf((a, HEX));
+        debugf(("\nMID:  "));
+        debugf((b, HEX));
+        debugf(("\nLSB:  "));
+        debugf((c, HEX));
+        debugf(("\n"));        
+        
 	_enableChipSelect();
 
 	uint8_t a_ret = SPI.transfer(a);
-    uint8_t b_ret = SPI.transfer(b);
+        uint8_t b_ret = SPI.transfer(b);
 	uint8_t c_ret = SPI.transfer(c);
 	
 	_disableChipSelect();
@@ -93,6 +112,16 @@ uint32_t DACClass::_transfer(uint8_t a, uint8_t b, uint8_t c)
 
 void DACClass::_send(uint8_t a, uint8_t b, uint8_t c)
 {
+  
+  debugf(("Sending the following message to the DAC:"));
+        debugf(("\nMSB:  "));
+        debugf((a, HEX));
+        debugf(("\nMID:  "));
+        debugf((b, HEX));
+        debugf(("\nLSB:  "));
+        debugf((c, HEX));
+        debugf(("\n"));     
+  
   _enableChipSelect();
 
   SPI.transfer(a);

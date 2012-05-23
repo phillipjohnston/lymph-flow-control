@@ -28,24 +28,24 @@ DACClass DAC;
 void setup()
 {
    serialInit();
+   
    DAC.setupSPI(8); //Set pin 8 as the DAC CS Pin
    Serial.println("DAC Initialized.");
   
-   DAC.setOutputRange((uint8_t) ADDRESS_ALL, (uint32_t) UNIPOLAR_5V);
+   Serial.println("Setting DAC Control Registers.");
+   DAC.setControl(); //Enable thermal shutdown and clamping
+   
+   Serial.println("Setting DAC Ouput Range.");
+   DAC.setOutputRange((uint8_t) ADDRESS_B, (uint32_t) UNIPOLAR_5V);
   
   delayMicroseconds(1);
-  /* New communication--we're sending this twice here because there was a
-   * suggestion on the data sheet that the first instruction could be ignored if
-   * the data lines were powered in an inappropriate order. As we don't have too
-   * much control over the powering up order, we're just gonna be sure and send
-   * it twice*/
-   
-  Serial.println("Setting output range...");
 
   /* As with the output register, three bytes are being set here to give the DAC
    * its expected 24bits, and in doing so turn on DAC A*/
-  DAC.setPowerControl(PUA); //Power up DAC A
-  Serial.println("Setting Power Control...");
+   
+   Serial.println("Setting DAC Power Control");
+  DAC.setPowerControl(PUB); //Power up DAC A
+  delayMicroseconds(10);
   
   delayMicroseconds(1);
   
@@ -56,20 +56,46 @@ void setup()
    * that can be done. However, until we get the DAC working, we'll stay on the
    * suggested side. One byte gets clocked back per byte send, making three
    * total bytes returned*/
+   Serial.println("Reading DAC Power Control.");
    uint32_t dacCheckPower = DAC.getPowerControl();
-   Serial.println("Reading Power Control...");
+   
 
    
    //TODO:  Check that the stuff was set sucessfully.  Mask and compare with
    // the returned data
    
    
-   DAC.setValue(ADDRESS_A, 0xFFFF); //Set equal to the highest output voltage: close to 5V in this case
-   Serial.println("Setting DAC A to 5 V");
+   //DAC.setValue(ADDRESS_A, 0xFFFF); //Set equal to the highest output voltage: close to 5V in this case
+   //Serial.println("Setting DAC A to 5 V");
+   delayMicroseconds(10);
+   Serial.println("Setting DAC to 5V");
+   DAC.setValue(ADDRESS_B, 0xFFFF);
    
+   
+   Serial.print("\nADDRESS_A:  ");
+   Serial.print(ADDRESS_A);
+   Serial.print("\nADDRESS_B:  ");
+   Serial.print(ADDRESS_B);
+   Serial.print("\nADDRESS_ALL:  ");
+   Serial.print(ADDRESS_ALL);   
+   
+   Serial.print("\nA0:  ");
+   Serial.print(__A0);   
+   Serial.print("\nA1:  ");
+   Serial.print(__A1);   
+   Serial.print("\nA2:  ");
+   Serial.print(__A2);   
+   Serial.print("\nREG0:  ");
+   Serial.print(REG0);   
+   Serial.print("\nREG1:  ");
+   Serial.print(REG1);   
+   Serial.print("\nREG2:  ");
+   Serial.print(REG2);   
+   Serial.print("\nRW:  ");
+   Serial.print(RW);   
 }
-
-/* The loop() is empty because all the relevant setup and output initialization is
+ 
+ /* The loop() is empty because all the relevant setup and output initialization is
  * being done once in the setup() function. That being said, it could
  * conceivable hold code that change the DAC outputs or turn them on or off
  * depending on what instruction is sent to the Uno32. Evaluation of this sort

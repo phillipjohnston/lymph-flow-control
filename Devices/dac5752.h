@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+//#define DAC_DEBUG
+
 /*
 * Type Definitions
 */
@@ -24,15 +26,21 @@ typedef enum outputRanges
 /********************
 * Define Statements *
 ********************/
+/*
+****NOTE*****
+* A2 .. A0 were renamed with two "__" in front, because leaving them as "A2",
+* "A1", and "A0" caused them to be valued at 16, 15, and 14 respectively.
+* This causes communication with the control register and DAC B to fail.
+*/
 
 //Register Definitions
-#define RW 128 //BIT 7*
+#define RW 128 //BIT 7*, Bit 6 is "zero"
 #define REG2 32 //Bit 5
 #define REG1 16 //Bit 4
 #define REG0 8 //Bit 3
-#define A2 4 //Bit 2
-#define A1 2 //Bit 1
-#define A0 1 //Bit 0
+#define __A2 (1 << 2) //Bit 2
+#define __A1 (1 << 1) //Bit 1
+#define __A0 (1 << 0) //Bit 0
 
 // Power Up Definitions
 #define PUA 1
@@ -42,14 +50,14 @@ typedef enum outputRanges
 
 //Channel Definitions
 #define ADDRESS_A 0
-#define ADDRESS_B A1
-#define ADDRESS_ALL A2
+#define ADDRESS_B __A1
+#define ADDRESS_ALL __A2
 
 
 //Control Definitions
 #define OUTPUT_RANGE_SEL REG0
 #define CONTROL (REG0 | REG1)
-#define CONTROL_SET (CONTROL | A0)
+#define CONTROL_SET (CONTROL | __A0)
 #define POWER_CONTROL REG1
 #define CTRL_CLAMP_EN 4
 #define CTRL_THERMAL_SHUTDOWN 8
