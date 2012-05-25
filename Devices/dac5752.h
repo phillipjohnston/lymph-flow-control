@@ -43,15 +43,15 @@ typedef enum outputRanges
 #define __A0 (1 << 0) //Bit 0
 
 // Power Up Definitions
-#define PUA 1
-#define PUB (1 << 2)
-#define POWER_UP_ALL PUA | PUB
+#define POWER_DAC_A 1
+#define POWER_DAC_B (1 << 2)
+#define POWER_DAC_ALL POWER_DAC_A | POWER_DAC_B
 
 
 //Channel Definitions
-#define ADDRESS_A 0
-#define ADDRESS_B __A1
-#define ADDRESS_ALL __A2
+#define DAC_A 0
+#define DAC_B __A1
+#define DAC_ALL __A2
 
 
 //Control Definitions
@@ -82,6 +82,7 @@ class DACClass
 	  uint32_t getPowerControl();
 	  uint32_t getControl();
 	  uint8_t getDACChipSelectPin();
+          void powerDownDAC(uint8_t channels);
 	  
    private: 
 	uint8_t dacCS;
