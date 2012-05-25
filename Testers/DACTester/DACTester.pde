@@ -36,7 +36,7 @@ void setup()
    DAC.setControl(); //Enable thermal shutdown and clamping
    
    Serial.println("Setting DAC Ouput Range.");
-   DAC.setOutputRange((uint8_t) ADDRESS_B, (uint32_t) UNIPOLAR_5V);
+   DAC.setOutputRange((uint8_t) DAC_ALL, (uint32_t) UNIPOLAR_5V);
   
   delayMicroseconds(1);
 
@@ -44,7 +44,7 @@ void setup()
    * its expected 24bits, and in doing so turn on DAC A*/
    
    Serial.println("Setting DAC Power Control");
-  DAC.setPowerControl(PUB); //Power up DAC A
+  DAC.setPowerControl(POWER_DAC_ALL); //Power up DAC A
   delayMicroseconds(10);
   
   delayMicroseconds(1);
@@ -57,8 +57,7 @@ void setup()
    * suggested side. One byte gets clocked back per byte send, making three
    * total bytes returned*/
    Serial.println("Reading DAC Power Control.");
-   uint32_t dacCheckPower = DAC.getPowerControl();
-   
+   uint32_t dacCheckPower = DAC.getPowerControl();  
 
    
    //TODO:  Check that the stuff was set sucessfully.  Mask and compare with
@@ -69,7 +68,9 @@ void setup()
    //Serial.println("Setting DAC A to 5 V");
    delayMicroseconds(10);
    Serial.println("Setting DAC to 5V");
-   DAC.setValue(ADDRESS_B, 0xFFFF);
+   //DAC.setValue(ADDRESS_A, 0xFFFF);
+   
+   DAC.setValue(DAC_ALL, 0xFFFF);
    
 }
  
