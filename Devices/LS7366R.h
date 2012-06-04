@@ -32,14 +32,14 @@
 ********************/
 class LS7366RClass : public SPIDevice
 {
-   public:
-	  LS7366RClass();
-	  ~LS7366RClass();
-	  void setupSPI();
-	  double readPosition();
-	  void setMDR0Reg(uint8_t config_val);
-	  void setMDR1Reg(uint8_t config_val);
-	  uint8_t getMDR0Reg();
-	  uint8_t getMDR1Reg();
+    public:
+        LS7366RClass();
+        ~LS7366RClass();
+        void setupSPI();
+        double readPosition();
+        void setMDR0Reg(uint8_t config_val);
+        void setMDR1Reg(uint8_t config_val);
+        uint8_t getMDR0Reg();
+        uint8_t getMDR1Reg();
 };
 #endif

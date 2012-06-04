@@ -11,14 +11,13 @@
 #include "SPIDevice.h"
 #include "SPI.h"
 
-
 /********************
 * Define Statements *
 ********************/
 #ifdef SPIDEV_DEBUG
-  #define debugf(msg) Serial.print msg
+    #define debugf(msg) Serial.print msg
 #else
-  #define debugf(msg)
+    #define debugf(msg)
 #endif
 
 /***********************
@@ -26,43 +25,43 @@
 ***********************/
 SPIDevice::SPIDevice()
 {
-	//Nothing to construct
+    //Nothing to construct
 }
 
 SPIDevice::~SPIDevice()
 {
-	//Nothing to destruct
+    //Nothing to destruct
 }
 
 void SPIDevice::setupSPI()
 {
-  //We're gonna default to SPI_MODE1 for now.
-  //TODO:  Make this more robust/generic
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setDataMode(SPI_MODE1);
-  SPI.setClockDivider(SPI_CLOCK_DIV16);
+    //We're gonna default to SPI_MODE1 for now.
+    //TODO:  Make this more robust/generic
+    SPI.setBitOrder(MSBFIRST);
+    SPI.setDataMode(SPI_MODE1);
+    SPI.setClockDivider(SPI_CLOCK_DIV16);
 }
 
 void SPIDevice::setCSPin(uint8_t cs_pin)
 {
-  CSpin = cs_pin;
-  pinMode(CSpin, OUTPUT);
-  _disableChipSelect();
+    CSpin = cs_pin;
+    pinMode(CSpin, OUTPUT);
+    _disableChipSelect();
 }
 
 inline uint32_t SPIDevice::getLastTransmissionResult()
 {
-	return _transfer(0x18, 0, 0);
+    return _transfer(0x18, 0, 0);
 }
 
 inline void SPIDevice::_enableChipSelect()
 {
-	digitalWrite(CSpin, LOW);
+    digitalWrite(CSpin, LOW);
 }
 
 inline void SPIDevice::_disableChipSelect()
 {
-	digitalWrite(CSpin, HIGH);
+    digitalWrite(CSpin, HIGH);
 }
 
 uint32_t SPIDevice::_transfer(uint8_t a, uint8_t b, uint8_t c)
@@ -76,43 +75,43 @@ uint32_t SPIDevice::_transfer(uint8_t a, uint8_t b, uint8_t c)
     debugf((c, HEX));
     debugf(("\n"));        
         
-	_enableChipSelect();
+    _enableChipSelect();
 
-	uint8_t a_ret = SPI.transfer(a);
+    uint8_t a_ret = SPI.transfer(a);
     uint8_t b_ret = SPI.transfer(b);
-	uint8_t c_ret = SPI.transfer(c);
-	
-	_disableChipSelect();
-	
-	//Store the returned values as a single uint32_t
-	uint32_t ret_val = (uint32_t) a_ret;
-	ret_val = ((ret_val << 8) | ((uint32_t) b_ret));
-	ret_val = ((ret_val << 8) | ((uint32_t) c_ret));
+    uint8_t c_ret = SPI.transfer(c);
+    
+    _disableChipSelect();
+    
+    //Store the returned values as a single uint32_t
+    uint32_t ret_val = (uint32_t) a_ret;
+    ret_val = ((ret_val << 8) | ((uint32_t) b_ret));
+    ret_val = ((ret_val << 8) | ((uint32_t) c_ret));
   
-	return ret_val;
+    return ret_val;
 }
 
 void SPIDevice::_send(uint8_t a, uint8_t b, uint8_t c)
-{		   
-  debugf(("Sending the following message to the DAC:"));
-  debugf(("\nMSB:  "));
-  debugf((a, HEX));
-  debugf(("\nMID:  "));
-  debugf((b, HEX));
-  debugf(("\nLSB:  "));
-  debugf((c, HEX));
-  debugf(("\n"));     
-  
-  _enableChipSelect();
+{           
+    debugf(("Sending the following message to the DAC:"));
+    debugf(("\nMSB:  "));
+    debugf((a, HEX));
+    debugf(("\nMID:  "));
+    debugf((b, HEX));
+    debugf(("\nLSB:  "));
+    debugf((c, HEX));
+    debugf(("\n"));     
 
-  SPI.transfer(a);
-  SPI.transfer(b);
-  SPI.transfer(c);
-  
-  _disableChipSelect();
+    _enableChipSelect();
+
+    SPI.transfer(a);
+    SPI.transfer(b);
+    SPI.transfer(c);
+
+    _disableChipSelect();
 }
 
 uint8_t SPIDevice::getChipSelectPin()
 {
-	return CSpin;
+    return CSpin;
 }

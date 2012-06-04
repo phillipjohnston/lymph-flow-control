@@ -14,10 +14,10 @@
 *******************/
 typedef enum outputRanges
 {
-	UNIPOLAR_5V = 0,
-	UNIPOLAR_10V,
-	BIPOLAR_5V,
-	BIPOLAR_10V
+    UNIPOLAR_5V = 0,
+    UNIPOLAR_10V,
+    BIPOLAR_5V,
+    BIPOLAR_10V
 } dac_output_range_t;
 
 /********************
@@ -62,20 +62,20 @@ typedef enum outputRanges
 ********************/
 class DACClass : public SPIDevice
 {
-   public:
-	  DACClass();
-	  ~DACClass();
-	  
-	  void setupSPI(); //Differs from SPI Mode 1 used in SPIDevice
-	  
-	  void setOutputRange(uint8_t address, uint8_t voltage_range);
-	  uint32_t getOutputRange(uint8_t address);
-	  void setControl();
-	  void setPowerControl(uint8_t channels);
-	  void setValue(uint8_t address, uint16_t value);
-	  uint32_t getPowerControl();
-	  uint32_t getControl();
-      void powerDownDAC(uint8_t channels);
+    public:
+        DACClass();
+        ~DACClass();
+
+        void setupSPI(); //Differs from SPI Mode 1 used in SPIDevice
+
+        void setOutputRange(uint8_t address, uint8_t voltage_range);
+        uint32_t getOutputRange(uint8_t address);
+        void setControl();
+        void setPowerControl(uint8_t channels);
+        void setValue(uint8_t address, uint16_t value);
+        uint32_t getPowerControl();
+        uint32_t getControl();
+        void powerDownDAC(uint8_t channels);
 
 	private:
 	//uint8_t dacCS;

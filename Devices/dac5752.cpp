@@ -11,9 +11,9 @@
 * Define Statements *
 ********************/
 #ifdef DAC_DEBUG
-  #define debugf(msg) Serial.print msg
+    #define debugf(msg) Serial.print msg
 #else
-  #define debugf(msg)
+    #define debugf(msg)
 #endif
 
 /***********************
@@ -21,32 +21,32 @@
 ***********************/
 DACClass::DACClass()
 {
-  debugf(("Initializing DAC object...\n"));
+    debugf(("Initializing DAC object...\n"));
 }
 
 DACClass::~DACClass()
 {
-	//SPI.end(); //Release SPI stuff
+    //SPI.end(); //Release SPI stuff
 }
 
 void DACClass::setupSPI()
 {
-  //SPI Settings for DAC5752
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setDataMode(SPI_MODE2);
-  SPI.setClockDivider(SPI_CLOCK_DIV4);
+    //SPI Settings for DAC5752
+    SPI.setBitOrder(MSBFIRST);
+    SPI.setDataMode(SPI_MODE2);
+    SPI.setClockDivider(SPI_CLOCK_DIV4);
 }
 
 uint32_t DACClass::getPowerControl()
 {
-	_send(RW | POWER_CONTROL, 0, 0);
-	return getLastTransmissionResult();
+    _send(RW | POWER_CONTROL, 0, 0);
+    return getLastTransmissionResult();
 }
 
 void DACClass::setPowerControl(uint8_t channels)
 {
-	_send(POWER_CONTROL, 0, channels & 15);
-	 delayMicroseconds(10); //Datasheet specifies a delay of 10 microseconds befoer issuing another command.
+    _send(POWER_CONTROL, 0, channels & 15);
+     delayMicroseconds(10); //Datasheet specifies a delay of 10 microseconds befoer issuing another command.
 }
 
 uint32_t DACClass::getControl()
@@ -62,7 +62,7 @@ void DACClass::setControl()
 
 void DACClass::setValue(uint8_t address, uint16_t val)
 {
-  _send(address,(uint8_t)(val >> 8) & 0xFF,(uint8_t)(val) & 0xFF);
+    _send(address,(uint8_t)(val >> 8) & 0xFF,(uint8_t)(val) & 0xFF);
 }
 
 void DACClass::setOutputRange(uint8_t address, uint8_t voltage_range)
@@ -73,23 +73,23 @@ void DACClass::setOutputRange(uint8_t address, uint8_t voltage_range)
 /*
 void DACClass::powerDownDAC(uint8_t channels)
 {
-  //To ensure we don't get stuck at some odd place sometimes, we're gonna:
-  //Set voltage to zero.
-  //Turn off DAC
-  if(channels == POWER_DAC_A)
-  {
-    setValue(DAC_A, 0x0);
-    
-    
-  } 
-  else if (channels == POWER_DAC_B)
-  {
-    
-  }
-  else if(channels == POWER_DACA_ALL
-  {
-    
-    
-  }
+    //To ensure we don't get stuck at some odd place sometimes, we're gonna:
+    //Set voltage to zero.
+    //Turn off DAC
+    if(channels == POWER_DAC_A)
+    {
+        setValue(DAC_A, 0x0);
+
+
+    } 
+    else if (channels == POWER_DAC_B)
+    {
+
+    }
+    else if(channels == POWER_DACA_ALL
+    {
+
+
+    }
 }
 */
