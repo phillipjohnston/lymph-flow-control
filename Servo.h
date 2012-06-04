@@ -8,23 +8,23 @@
  *
 */
 
-#ifndef Servo_h
-#define Servo_h
+#ifndef SERVO_H
+#define SERVO_H
 
 /********************
 * Class Declaration * 
 ********************/
 class Servo
 {
-   public:
-      Servo(int chipSelect, int dacSelect);
-      void init(void);
-      double position(void);
-      void move(double volts);
-	  
-   private:
-      void _ls7366rConfig(void);
-      void _dacConfig(void);
+    public:
+        Servo(int chipSelect, int dacSelect);
+        void init(void);
+        double position(void);
+        void move(double volts);
+
+    private:
+        void _ls7366rConfig(void);
+        void _dacConfig(void);
 };
 
-#endif
+#endif //SERVO_H
