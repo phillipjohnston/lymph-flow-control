@@ -28,8 +28,9 @@ DACClass DAC;
 void setup()
 {
    serialInit();
-   
-   DAC.setupSPI(8); //Set pin 8 as the DAC CS Pin
+   SPI.begin();
+   DAC.setupSPI();
+   DAC.setCSPin(8); //Set pin 8 as the DAC CS Pin
    Serial.println("DAC Initialized.");
   
    Serial.println("Setting DAC Control Registers.");
