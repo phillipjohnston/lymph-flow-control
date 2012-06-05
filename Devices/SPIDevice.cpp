@@ -35,11 +35,13 @@ SPIDevice::~SPIDevice()
 
 void SPIDevice::setupSPI()
 {
+  /*
     //We're gonna default to SPI_MODE1 for now.
     //TODO:  Make this more robust/generic
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE1);
     SPI.setClockDivider(SPI_CLOCK_DIV16);
+    */
 }
 
 void SPIDevice::setCSPin(uint8_t cs_pin)
@@ -49,7 +51,7 @@ void SPIDevice::setCSPin(uint8_t cs_pin)
     _disableChipSelect();
 }
 
-inline uint32_t SPIDevice::getLastTransmissionResult()
+uint32_t SPIDevice::getLastTransmissionResult()
 {
     return _transfer(0x18, 0, 0);
 }

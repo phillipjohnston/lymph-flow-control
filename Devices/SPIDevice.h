@@ -29,7 +29,7 @@ public:
     void setCSPin(uint8_t cs_pin);
     virtual void setupSPI();
     uint8_t getChipSelectPin();
-    inline uint32_t getLastTransmissionResult(void);
+    uint32_t getLastTransmissionResult(void);
 
 protected:
     uint8_t CSpin;
