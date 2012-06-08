@@ -96,7 +96,7 @@ void Servo::_dacConfig(void)
     DAC.setupSPI(); //Ensure SPI is configured for this device
 
     //Turn on and check both dacs
-    DAC.setOutputRange((uint8_t) DAC_ALL, (uint32_t) UNIPOLAR_5V);
+    DAC.setOutputRange((uint8_t) DAC_ALL, (uint32_t) BIPOLAR_10V);
     DAC.setPowerControl(POWER_DAC_ALL); //Power up DAC A
 
     //Check the value of the power control register.
