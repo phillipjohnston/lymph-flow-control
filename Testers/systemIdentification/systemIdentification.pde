@@ -115,8 +115,6 @@ void loop()
             }
             
             configureTimer2(frequencies[++f_index]);
-            
-            
         }
         
         apply_value = false;         
