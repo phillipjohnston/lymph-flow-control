@@ -122,5 +122,10 @@ void Servo::_dacConfig(void)
 // apply +-10 V (double) signal to motor
 void Servo::move(double volts)
 {
-    //TODO
+    //For testing, we're gonna do +-5V. 
+    //Get ratio between volts and 5.0
+    float scale = volts / 5.0;
+    
+    int16_t value = (int16_t) (scale * (float) 0x7FFF); //Scale * value for 5V.
+    DAC.setValue(DAC_A, value); //Set the DAC output
 }
