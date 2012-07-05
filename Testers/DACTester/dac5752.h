@@ -54,8 +54,6 @@ typedef enum outputRanges
 #define CONTROL (REG0 | REG1)
 #define CONTROL_SET (CONTROL | __A0)
 #define POWER_CONTROL REG1
-
-#define CTRL_SDO_DISABLE 1
 #define CTRL_CLAMP_EN 4
 #define CTRL_THERMAL_SHUTDOWN 8
 
@@ -77,8 +75,9 @@ class DACClass : public SPIDevice
         uint32_t getPowerControl();
         uint32_t getControl();
         void powerDownDAC(uint8_t channels);
-        void enableSDO();
-        void disableSDO();
+
+	private:
+	//uint8_t dacCS;
 };
 
 #endif

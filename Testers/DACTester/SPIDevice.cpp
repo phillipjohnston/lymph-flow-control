@@ -14,8 +14,6 @@
 /********************
 * Define Statements *
 ********************/
-//#define SPIDEV_DEBUG
-
 #ifdef SPIDEV_DEBUG
     #define debugf(msg) Serial.print msg
 #else
@@ -57,20 +55,18 @@ uint32_t SPIDevice::getLastTransmissionResult()
 }
 
 inline void SPIDevice::_enableChipSelect()
-{ 
-    debugf(("Enable Chip Select Function enetered.\n"));
+{
     digitalWrite(CSpin, LOW);
 }
 
 inline void SPIDevice::_disableChipSelect()
 {
-    debugf(("Disable Chip Select Function enetered.\n"));
     digitalWrite(CSpin, HIGH);
 }
 
 uint32_t SPIDevice::_transfer(uint8_t a, uint8_t b, uint8_t c)
 {
-    debugf(("Sending the following message over SPI:"));
+    debugf(("Sending the following message to the DAC:"));
     debugf(("\nMSB:  "));
     debugf((a, HEX));
     debugf(("\nMID:  "));
@@ -97,7 +93,7 @@ uint32_t SPIDevice::_transfer(uint8_t a, uint8_t b, uint8_t c)
 
 void SPIDevice::_send(uint8_t a, uint8_t b, uint8_t c)
 {           
-    debugf(("Sending the following message over SPI:"));
+    debugf(("Sending the following message to the DAC:"));
     debugf(("\nMSB:  "));
     debugf((a, HEX));
     debugf(("\nMID:  "));
@@ -117,7 +113,7 @@ void SPIDevice::_send(uint8_t a, uint8_t b, uint8_t c)
 
 void SPIDevice::_send(uint8_t a, uint8_t b)
 {           
-    debugf(("Sending the following message over SPI:"));
+    debugf(("Sending the following message to the DAC:"));
     debugf(("\nMSB:  "));
     debugf((a, HEX));
     debugf(("\nLSB:  "));

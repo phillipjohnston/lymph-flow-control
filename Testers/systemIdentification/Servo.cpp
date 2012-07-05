@@ -34,12 +34,14 @@ LS7366RClass QD;
 * Function Definitions *
 ***********************/
 Servo::Servo(int chipSelect, int dacSelect)
-{
+{   
     // initialize SPI for LS7366R
     QD.setCSPin(chipSelect);
 
     //Initialize SPI for DAC
     DAC.setCSPin(dacSelect);
+    
+    digitalWrite(10, LOW);
 }
 
 // read position of motor (via LS7366R)
@@ -53,8 +55,8 @@ double Servo::position(void)
 void Servo::init(void)
 {
     SPI.begin();
-    _ls7366rConfig();
     _dacConfig();
+    _ls7366rConfig();
 }
 
 void Servo::_ls7366rConfig(void)
@@ -94,7 +96,7 @@ void Servo::_ls7366rConfig(void)
 void Servo::_dacConfig(void)
 {
     DAC.setupSPI(); //Ensure SPI is configured for this device
-
+    DAC.enableSDO();
     //Turn on and check both dacs
     DAC.setOutputRange((uint8_t) DAC_ALL, (uint32_t) BIPOLAR_5V);
     DAC.setPowerControl(POWER_DAC_A); //Power up DAC A
@@ -117,6 +119,8 @@ void Servo::_dacConfig(void)
         Serial.println("\n\n*** DAC5752 CONFIGURATION FAILUE! ***");
         while(1) {} //Wait indefinitely in error loop
     }
+    
+    DAC.disableSDO();
 }
 
 // apply +-10 V (double) signal to motor
@@ -127,5 +131,6 @@ void Servo::move(double volts)
     float scale = volts / 5.0;
     
     int16_t value = (int16_t) (scale * (float) 0x7FFF); //Scale * value for 5V.
+    //DAC.enableSDO();
     DAC.setValue(DAC_A, value); //Set the DAC output
-}
+    //DAC.disableSDO}
