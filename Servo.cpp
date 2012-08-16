@@ -33,13 +33,16 @@ LS7366RClass QD;
 /***********************
 * Function Definitions *
 ***********************/
-Servo::Servo(int chipSelect, int dacSelect)
-{
+Servo::Servo(uint16_t quadDecCS, uint16_t dacCS, uint8_t dac)
+{   
     // initialize SPI for LS7366R
-    QD.setCSPin(chipSelect);
-
+    QD.setCSPin(quadDecCS);
     //Initialize SPI for DAC
-    DAC.setCSPin(dacSelect);
+    DAC.setCSPin(dacCS);
+    
+    selected_dac = dac;
+    
+    digitalWrite(10, HIGH);
 }
 
 // read position of motor (via LS7366R)
@@ -54,7 +57,7 @@ void Servo::init(void)
 {
     SPI.begin();
     _ls7366rConfig();
-    _dacConfig();
+    _dacConfig(UNIPOLAR_10V);
 }
 
 void Servo::_ls7366rConfig(void)
@@ -91,78 +94,68 @@ void Servo::_ls7366rConfig(void)
     }
 }
 
-void Servo::_dacConfig(void)
-{
+void Servo::_dacConfig(uint8_t power_setting)
+{  
+    uint8_t newly_powered_DAC;
+  
     DAC.setupSPI(); //Ensure SPI is configured for this device
-
-    //Turn on and check both dacs
-    DAC.setOutputRange((uint8_t) DAC_ALL, (uint32_t) BIPOLAR_10V);
-    DAC.setPowerControl(POWER_DAC_ALL); //Power up DAC A
-
+    DAC.enableSDO();
+    
+    //See if another DAC is powered on so we don't overwrite settings
+    //Note:  For now, it will make sure the DACs use the same range.  
+    //If this is not desired, the code needs to be reworked.
+    
+    DAC.setOutputRange((uint8_t) selected_dac, (uint32_t) power_setting);
+    
+    uint32_t configuredDACPower = DAC.getPowerControl();
+    uint8_t powered_DAC = configuredDACPower & 0xF; //Get the relevant portion
+    
+    if(selected_dac == DAC_A)
+    {
+      DAC.setPowerControl(POWER_DAC_A | powered_DAC); //Power up DAC A
+      newly_powered_DAC = POWER_DAC_A;
+    }
+    else if(selected_dac == DAC_B)
+    {
+      DAC.setPowerControl(POWER_DAC_B | powered_DAC); 
+      newly_powered_DAC = POWER_DAC_B;
+    }
+    else if(selected_dac == DAC_ALL)
+    {
+      DAC.setPowerControl(POWER_DAC_ALL); 
+      newly_powered_DAC = POWER_DAC_ALL;
+    }
+    
     //Check the value of the power control register.
     uint32_t dacCheckPower = DAC.getPowerControl();
 
-    if( (dacCheckPower & 0xF) == POWER_DAC_ALL)
+    if( (dacCheckPower & 0xF) == (newly_powered_DAC | powered_DAC))
     {
         Serial.println("DAC power control successfully configured.\n");
-        Serial.println("Turned on DAC A & DAC B.");
     }
     else
     {
         Serial.println("DAC5752 Power Control Reg Values:");
         Serial.print("Config Value: ");
-        Serial.print(POWER_DAC_ALL, BIN);
+        Serial.print((selected_dac | powered_DAC), BIN);
         Serial.print("\nRegister Value: ");
         Serial.print(dacCheckPower & 0xF, BIN);
         Serial.println("\n\n*** DAC5752 CONFIGURATION FAILUE! ***");
         while(1) {} //Wait indefinitely in error loop
     }
+    
+    DAC.disableSDO();
 }
 
 // apply +-10 V (double) signal to motor
-/*void Servo::move(double volts)
+void Servo::move(double volts)
 {
-************************************
-  digitalWrite(chipSelectPin, LOW);
-  
-  SPI.transfer(dacRegTop);
-  SPI.transfer(dacRegMid);
-  SPI.transfer(dacRegBot);
-
-  digitalWrite(chipSelectPin, HIGH);
-  Serial.println("Set DAC A to 10 V");
-  **************************************
-   // determine if voltage is +, -, or zero
-*   if (volts == 0.0)
-   {
-       // make sure motor is stopped
-       digitalWrite(_applyArray[0], LOW);
-       digitalWrite(_applyArray[1], LOW);
-   }
-   else if (volts < 0.0)  
-   {
-       // make sure motor is moving backward
-       digitalWrite(_applyArray[0], LOW);
-       digitalWrite(_applyArray[1], HIGH);
-   }
-   else
-   {
-       // make sure motor is moving forward!
-       digitalWrite(_applyArray[0], HIGH);
-       digitalWrite(_applyArray[1], LOW);
-   }*
-   
-   // write particular value to PWM pin; make sure it's a valid byte!
-   double val = 0;
-   // can't be less than -10 or more than 10
-   if (volts > 10.0) { val = 10.0; }
-   else if (volts < -10.0) { val = -10.0; }
-   else { val = volts; }
-   //2.5 is the 2.5V REFIN, 4 is just a set gain
-   //The 32767 comes from the max bit value being 32767, which is one less than
-   //the 32768 which would ensure perfect 10V... buuut... this should be fine
-   val = val/4/2.5*32767;
-   // typecast to a byte
-   int valInt = (int)(val);
-   _chipTell
-}*/
+    //For testing, we're gonna do +-5V. 
+    //Get ratio between volts and 5.0
+    float scale = volts / 10.0;
+    
+    int16_t value = (int16_t) floor(scale * 0xFFFF); //Scale * value for 5V.
+    //DAC.enableSDO();
+    DAC.setValue(selected_dac, value); //Set the DAC output
+    //DAC.disableSDO}
+}
