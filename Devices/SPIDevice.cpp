@@ -14,6 +14,8 @@
 /********************
 * Define Statements *
 ********************/
+//#define SPIDEV_DEBUG
+
 #ifdef SPIDEV_DEBUG
     #define debugf(msg) Serial.print msg
 #else
@@ -35,13 +37,11 @@ SPIDevice::~SPIDevice()
 
 void SPIDevice::setupSPI()
 {
-  /*
     //We're gonna default to SPI_MODE1 for now.
     //TODO:  Make this more robust/generic
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE1);
     SPI.setClockDivider(SPI_CLOCK_DIV16);
-    */
 }
 
 void SPIDevice::setCSPin(uint8_t cs_pin)
@@ -57,18 +57,20 @@ uint32_t SPIDevice::getLastTransmissionResult()
 }
 
 inline void SPIDevice::_enableChipSelect()
-{
+{ 
+    debugf(("Enable Chip Select Function enetered.\n"));
     digitalWrite(CSpin, LOW);
 }
 
 inline void SPIDevice::_disableChipSelect()
 {
+    debugf(("Disable Chip Select Function enetered.\n"));
     digitalWrite(CSpin, HIGH);
 }
 
 uint32_t SPIDevice::_transfer(uint8_t a, uint8_t b, uint8_t c)
 {
-    debugf(("Sending the following message to the DAC:"));
+    debugf(("Sending the following message over SPI:"));
     debugf(("\nMSB:  "));
     debugf((a, HEX));
     debugf(("\nMID:  "));
@@ -95,7 +97,7 @@ uint32_t SPIDevice::_transfer(uint8_t a, uint8_t b, uint8_t c)
 
 void SPIDevice::_send(uint8_t a, uint8_t b, uint8_t c)
 {           
-    debugf(("Sending the following message to the DAC:"));
+    debugf(("Sending the following message over SPI:"));
     debugf(("\nMSB:  "));
     debugf((a, HEX));
     debugf(("\nMID:  "));
@@ -109,6 +111,22 @@ void SPIDevice::_send(uint8_t a, uint8_t b, uint8_t c)
     SPI.transfer(a);
     SPI.transfer(b);
     SPI.transfer(c);
+
+    _disableChipSelect();
+}
+
+void SPIDevice::_send(uint8_t a, uint8_t b)
+{           
+    debugf(("Sending the following message over SPI:"));
+    debugf(("\nMSB:  "));
+    debugf((a, HEX));
+    debugf(("\nLSB:  "));
+    debugf((b, HEX));  
+
+    _enableChipSelect();
+
+    SPI.transfer(a);
+    SPI.transfer(b);
 
     _disableChipSelect();
 }
