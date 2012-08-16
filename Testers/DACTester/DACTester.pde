@@ -37,7 +37,7 @@ void setup()
    DAC.setControl(); //Enable thermal shutdown and clamping
    
    Serial.println("Setting DAC Ouput Range.");
-   DAC.setOutputRange((uint8_t) DAC_ALL, (uint32_t) UNIPOLAR_5V);
+   DAC.setOutputRange((uint8_t) DAC_ALL, (uint32_t) UNIPOLAR_10V);
   
   delayMicroseconds(1);
 
@@ -71,7 +71,7 @@ void setup()
    Serial.println("Setting DAC to 5V");
    //DAC.setValue(ADDRESS_A, 0xFFFF);
    
-   DAC.setValue(DAC_ALL, 0xFFFF);
+   //DAC.setValue(DAC_ALL, 0xFFFF);
    
 }
  

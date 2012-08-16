@@ -70,6 +70,16 @@ void DACClass::setOutputRange(uint8_t address, uint8_t voltage_range)
     _send(OUTPUT_RANGE_SEL | address, 0, voltage_range);
 }
 
+void DACClass::disableSDO()
+{
+  _send(CONTROL_SET, 0, CTRL_THERMAL_SHUTDOWN | CTRL_CLAMP_EN | CTRL_SDO_DISABLE);
+}
+
+void DACClass::enableSDO()
+{
+  setControl();
+}
+
 /*
 void DACClass::powerDownDAC(uint8_t channels)
 {
